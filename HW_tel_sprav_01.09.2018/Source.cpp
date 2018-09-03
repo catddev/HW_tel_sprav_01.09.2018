@@ -5,35 +5,76 @@
 
 using namespace std;
 
-/// ***Написать программу «расширенный телефонный справочник».Создайте массив указателей из двух элементов.
-/// Каждый указатель массива ссылается на динамический массив целых чисел.
-/// Первый динамический массив – это список кодов, второй массив – это список номеров.
-/// Таким образом, каждая запись в телефонном справочнике содержит код города и номер телефона.
+// ***Написать программу «расширенный телефонный справочник».Создайте массив указателей из двух элементов.
+// Каждый указатель массива ссылается на динамический массив целых чисел.
+// Первый динамический массив – это список кодов, второй массив – это список номеров.
+// Таким образом, каждая запись в телефонном справочнике содержит код города и номер телефона.
 // Напишите функции для добавления нового телефона в массив,
 // для удаления указанного телефона из справочника,
 // поиск телефона по номеру,
 // сортировку по номеру телефона, сортировку по коду города.
 // Создайте меню для пользователя.
 
-void add(int **&a, int &n, int kod, int nomer) {
-	int **tmp, *p, *p1, *p2;
-	tmp = new int*[2];
-
-	for (p = a[0], p1 = tmp[0]; p < a[0] + n + 1; p++, p1++)
+void add(int *&a, int*&b, int &n, int kod, int nomer) {
+	int *tmp, *p, *p1, *tmp2, *p2;
+	tmp = new int[n + 1];
+	tmp2 = new int[n + 1];
+	
+	for (p = a, p1 = tmp; p < a + n; p++, p1++)
 		*p1 = *p;
 	*p1 = kod;
 
-	for (p = a[1], p2 = tmp[1]; p < a[1] + n +1; p++, p1++)
+	for (p = b, p2 = tmp2; p < b + n; p++, p2++)
 		*p2 = *p;
 	*p2 = nomer;
 
-	if (n != 0) delete[] a[0], delete[] a[1];
-	delete[] a;
-	for (int i = 0; i < n; i++)
-		a[i] = tmp[i];
+	if (n != 0) delete[] a, delete[] b;
+	
+	a = tmp;
+	b = tmp2;
 	n++;
 }
+bool search(int *a, int*b, int n, int kod, int nomer) {
+	int k = -1, k1 = -1;;
+	for (int i = 0; i < n; i++)
+	{
+		if (a[i] == kod) k = i;
+		if (b[i] == nomer) k1 = i;
+	}
+	if (k < 0 || k1 < 0)
+	{
+		cout << "no number (" << kod << " " << nomer << ") is found" << endl;
+		return false;
+	}
+	else if (k == k1)
+	{
+		cout << "telephone number (" << kod << " " << nomer << ") is under the index: " << k << endl;
+		return true;
+	}
+}
+void erase(int *&a, int*&b, int &n, int kod, int nomer) {
+	int *tmp, *tmp2;
+	int j = 0, j1 = 0;
+	tmp = new int[n - 1];
+	tmp2 = new int[n - 1];
 
+	if (!search(a, b, n, kod, nomer)) return;
+	else if(search(a, b, n, kod, nomer))
+	{
+		for (int i = 0; i < n; i++)
+		{
+			if (a[i] != kod)
+				tmp[j++] = a[i];
+			if (b[i] != nomer)
+				tmp2[j1++] = b[i];
+		}
+	}
+	cout << "(now is deleted)" << endl;
+	delete[] a, delete[] b;
+	a = tmp;
+	b = tmp2;
+	n = j;
+}
 void sort_kod(int *a[], int n) {
 	for (int pass = 0; pass < n - 1; pass++)
 	{
@@ -60,6 +101,18 @@ void sort_nomer(int *a[], int n) {
 		}
 	}
 }
+void print(int **a, int n) {
+	cout << endl;
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cout << a[i][j] << "   ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
 
 int main()
 {
@@ -67,8 +120,6 @@ int main()
 
 	setlocale(LC_ALL, "Rus");
 
-	while (true)
-	{
 		int n;
 		cin >> n;
 		int **a;
@@ -83,32 +134,73 @@ int main()
 			else cout << "список номеров: ";
 			for (int j = 0; j < n; j++)
 			{
-				a[i][j] = rand() % 1000 + 100;
+				a[i][j] = rand() % 901 + 100;
 				cout << a[i][j] << "   ";
 			}
 			cout << endl;
 		}
 		cout << endl;
 
-		/*sort_kod(a, n);
-		sort_nomer(a, n);*/
-		add(a, n, 178, 999);
-
-		for (int i = 0; i < 2; i++)
+		int choice;
+		bool f = true;
+		while (f)
 		{
-			for (int j = 0; j < n; j++)
-			{
-				cout << a[i][j] << "   ";
-			}
-			cout << endl;
-		}
-		cout << endl;
+			cout << "Выберите действие:" << endl;
+			cout << "1 - добавление номера в справочник" << endl;
+			cout << "2 - поиск телефона по номеру" << endl;
+			cout << "3 - удаление указанного телефона из справочника" << endl;
+			cout << "4 - сортировка по номеру телефона" << endl;
+			cout << "5 - сортировка по коду город" << endl;
+			cout << "0 - выход" << endl;
 
+			cin >> choice;
+			switch (choice)
+			{
+			case 1:
+			{
+				add(a[0], a[1], n, 7212, 335010);
+				add(a[0], a[1], n, 7272, 337788);
+				print(a, n);
+			}
+			break;
+			case 2:
+			{
+				search(a[0], a[1], n, 7272, 888888);
+				search(a[0], a[1], n, 7212, 335010);
+				print(a, n);
+			}
+			break;
+			case 3:
+			{
+				erase(a[0], a[1], n, 7272, 888888);
+				erase(a[0], a[1], n, 7272, 337788);
+				print(a, n);
+			}
+			break;
+			case 4:
+			{
+				sort_kod(a, n);
+				print(a, n);
+			}
+			break;
+			case 5:
+			{
+				sort_nomer(a, n);
+				print(a, n);
+			}
+			break;
+			case 0:
+			{
+				f = false;
+			}
+			break;
+			}
+		}
 
 		for (int i = 0; i < 2; i++)
 			delete[] a[i];
 		delete[] a;
-	}
+
 	system("pause");
 	return 0;
 }

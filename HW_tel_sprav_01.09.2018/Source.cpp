@@ -63,7 +63,7 @@ void erase(int **&a, int &n, int kod, int nomer) {
 	tmp[1] = new int[n - 1];
 
 	if (!search(a, n, kod, nomer)) return;
-	else if(search(a, n, kod, nomer))
+	else
 	{
 		for (int i = 0; i < n; i++)
 		{

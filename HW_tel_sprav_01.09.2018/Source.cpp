@@ -15,35 +15,38 @@ using namespace std;
 // сортировку по номеру телефона, сортировку по коду города.
 // Создайте меню для пользователя.
 
-void add(int *&a, int*&b, int &n, int kod, int nomer) {
-	int *tmp, *p, *p1, *tmp2, *p2;
-	tmp = new int[n + 1];
-	tmp2 = new int[n + 1];
+void add(int **&a, int &n, int kod, int nomer) {
+	int **tmp;
+	tmp = new int*[2];
+	tmp[0] = new int[n + 1];
+	tmp[1] = new int[n + 1];
 	
-	for (p = a, p1 = tmp; p < a + n; p++, p1++)
-		*p1 = *p;
-	*p1 = kod;
+	for (int i = 0; i < n; i++)
+	{
+		tmp[0][i] = a[0][i];
+		tmp[1][i] = a[1][i];
+	}
+	tmp[0][n] = kod;
+	tmp[1][n] = nomer;
 
-	for (p = b, p2 = tmp2; p < b + n; p++, p2++)
-		*p2 = *p;
-	*p2 = nomer;
-
-	if (n != 0) delete[] a, delete[] b;
-	
+	if (n != 0)
+	{
+		delete[] a[0], delete[] a[1];
+		delete[] a;
+	}
 	a = tmp;
-	b = tmp2;
 	n++;
 }
-bool search(int *a, int*b, int n, int kod, int nomer) {
+bool search(int **a, int n, int kod, int nomer) {
 	int k = -1, k1 = -1;;
 	for (int i = 0; i < n; i++)
 	{
-		if (a[i] == kod) k = i;
-		if (b[i] == nomer) k1 = i;
+		if (a[0][i] == kod) k = i;
+		if (a[1][i] == nomer) k1 = i;
 	}
 	if (k < 0 || k1 < 0)
 	{
-		cout << "no number (" << kod << " " << nomer << ") is found" << endl;
+		cout << "number (" << kod << " " << nomer << ") is not found" << endl;
 		return false;
 	}
 	else if (k == k1)
@@ -52,30 +55,31 @@ bool search(int *a, int*b, int n, int kod, int nomer) {
 		return true;
 	}
 }
-void erase(int *&a, int*&b, int &n, int kod, int nomer) {
-	int *tmp, *tmp2;
+void erase(int **&a, int &n, int kod, int nomer) {
+	int **tmp;
 	int j = 0, j1 = 0;
-	tmp = new int[n - 1];
-	tmp2 = new int[n - 1];
+	tmp = new int*[2];
+	tmp[0] = new int[n - 1];
+	tmp[1] = new int[n - 1];
 
-	if (!search(a, b, n, kod, nomer)) return;
-	else if(search(a, b, n, kod, nomer))
+	if (!search(a, n, kod, nomer)) return;
+	else if(search(a, n, kod, nomer))
 	{
 		for (int i = 0; i < n; i++)
 		{
-			if (a[i] != kod)
-				tmp[j++] = a[i];
-			if (b[i] != nomer)
-				tmp2[j1++] = b[i];
+			if (a[0][i] != kod)
+				tmp[0][j++] = a[0][i];
+			if (a[1][i] != nomer)
+				tmp[1][j1++] =a[1][i];
 		}
 	}
-	cout << "(now is deleted)" << endl;
-	delete[] a, delete[] b;
+	cout << "(is deleted now)" << endl;
+	delete[] a[0], delete[] a[1];
+	delete[] a;
 	a = tmp;
-	b = tmp2;
 	n = j;
 }
-void sort_kod(int *a[], int n) {
+void sort_kod(int **a, int n) {
 	for (int pass = 0; pass < n - 1; pass++)
 	{
 		for (int i = 0; i < n - 1; i++)
@@ -87,8 +91,9 @@ void sort_kod(int *a[], int n) {
 			}
 		}
 	}
+	cout << "sorted by key:" << endl;
 }
-void sort_nomer(int *a[], int n) {
+void sort_nomer(int **a, int n) {
 	for (int pass = 0; pass < n - 1; pass++)
 	{
 		for (int i = 0; i < n - 1; i++)
@@ -100,6 +105,7 @@ void sort_nomer(int *a[], int n) {
 			}
 		}
 	}
+	cout << "sorted by number:" << endl;
 }
 void print(int **a, int n) {
 	cout << endl;
@@ -151,29 +157,29 @@ int main()
 			cout << "3 - удаление указанного телефона из справочника" << endl;
 			cout << "4 - сортировка по номеру телефона" << endl;
 			cout << "5 - сортировка по коду город" << endl;
-			cout << "0 - выход" << endl;
+			cout << "0 - выход" << endl << endl;
 
 			cin >> choice;
 			switch (choice)
 			{
 			case 1:
 			{
-				add(a[0], a[1], n, 7212, 335010);
-				add(a[0], a[1], n, 7272, 337788);
+				add(a, n, 7212, 335010);
+				add(a, n, 7272, 337788);
 				print(a, n);
 			}
 			break;
 			case 2:
 			{
-				search(a[0], a[1], n, 7272, 888888);
-				search(a[0], a[1], n, 7212, 335010);
+				search(a, n, 7272, 888888);
+				search(a, n, 7212, 335010);
 				print(a, n);
 			}
 			break;
 			case 3:
 			{
-				erase(a[0], a[1], n, 7272, 888888);
-				erase(a[0], a[1], n, 7272, 337788);
+				erase(a, n, 7272, 888888);
+				erase(a, n, 7272, 337788);
 				print(a, n);
 			}
 			break;
